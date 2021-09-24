@@ -61,6 +61,7 @@ Task("Build-Images")
             BuildArg = new[] { $"winversion={winVersion}" },
             Tag = new[] { tag },
             File = @$"{edition}\{sqlVersion}\Dockerfile",
+            Isolation = "hyperv",
          }, edition);
       }
    }
