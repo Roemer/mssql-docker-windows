@@ -6,6 +6,21 @@
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
+var winVersions = Argument("winversion", "1803;1809;1903").Split(';');
+/*
+Windows versions:
+      "1803",
+      "1809",
+      "1903",
+      "1909",
+      "2004",
+      "20H2",
+      "21H1",
+      "21H2",
+      "ltsc2016",
+      "ltsc2019",
+      "ltsc2022"
+*/
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -32,19 +47,7 @@ Task("Default")
 
 Task("Build-Images")
 .Does(() => {
-   var winVersions = new[] {
-      "1803",
-      "1809",
-      //"1903",
-      //"1909",
-      //"2004",
-      //"20H2",
-      //"21H1",
-      //"21H2",
-      //"ltsc2016",
-      //"ltsc2019",
-      //"ltsc2022",
-   };
+
    var sqlServerVersions = new[] {
       //"2016_SP2",
       //"2016_SP3",
