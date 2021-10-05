@@ -6,12 +6,12 @@
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
-var winVersion = ArgumentOrEnvironmentVariable("winver", "1803");
-var sqlServerVersion = ArgumentOrEnvironmentVariable("sqlServerVersion", "2019");
+var winVersion = ArgumentOrEnvironmentVariable("winver", String.Empty, "1803");
+var sqlServerVersion = ArgumentOrEnvironmentVariable("sqlServerVersion", String.Empty, "2019");
 
-string username = ArgumentOrEnvironmentVariable("dockerhubUsername", "");
-string password = ArgumentOrEnvironmentVariable("dockerhubPassword", "");
-var dockerImageName = ArgumentOrEnvironmentVariable("dockerImageName", $"{username}/mssql-server:{sqlServerVersion}-{winVersion}");
+string username = ArgumentOrEnvironmentVariable("dockerhubUsername", String.Empty, String.Empty);
+string password = ArgumentOrEnvironmentVariable("dockerhubPassword", String.Empty, String.Empty);
+var dockerImageName = ArgumentOrEnvironmentVariable("dockerImageName", String.Empty, $"{username}/mssql-server:{sqlServerVersion}-{winVersion}");
 /*
 Windows versions:
       "1803",
