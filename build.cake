@@ -6,12 +6,12 @@
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
-var winVersion = ArgumentOrEnvironmentVariable("winver", String.Empty, "1803");
-var sqlServerVersion = ArgumentOrEnvironmentVariable("sqlServerVersion", String.Empty, "2019");
+var winVersion = EnvironmentVariable<string>("winver", "1803");
+var sqlServerVersion = EnvironmentVariable<string>("sqlServerVersion", "2019");
 
-string username = ArgumentOrEnvironmentVariable("dockerhubUsername", String.Empty, String.Empty);
-string password = ArgumentOrEnvironmentVariable("dockerhubPassword", String.Empty, String.Empty);
-var dockerImageName = ArgumentOrEnvironmentVariable("dockerImageName", String.Empty, $"{username}/mssql-server:{sqlServerVersion}-{winVersion}");
+string username = EnvironmentVariable<string>("dockerhubUsername", String.Empty);
+string password = EnvironmentVariable<string>("dockerhubPassword", String.Empty);
+var dockerImageName = EnvironmentVariable<string>("dockerImageName", $"{username}/mssql-server:{sqlServerVersion}-{winVersion}");
 /*
 Windows versions:
       "1803",
@@ -52,13 +52,13 @@ Task("Default")
 
 Task("Build-Images")
 .Does(() => {
-   Information($"Building SQL '{sqlVersion}' for Windows '{winVersion}'");
+   Information($"Building SQL '{sqlServerVersion}' for Windows '{winVersion}'");
    var edition = "developer";
 
    DockerBuild(new DockerImageBuildSettings {
       BuildArg = new[] { $"winversion={winVersion}" },
       Tag = new[] { dockerImageName },
-      File = @$"{edition}\{sqlVersion}\Dockerfile",
+      File = @$"{edition}\{sqlServerVersion}\Dockerfile",
       Isolation = "hyperv",
    }, edition);
       
@@ -68,8 +68,8 @@ Task("Build-Images")
 Task("Deploy-Images")
 .Does(() => {
    var loginSettings = new DockerRegistryLoginSettings();
-   loginSettings.username = username;
-   loginSettings.password = password;
+   loginSettings.Username = username;
+   loginSettings.Password = password;
    DockerLogin(loginSettings);
    DockerPush(dockerImageName);
    DockerLogout();
