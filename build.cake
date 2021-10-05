@@ -6,7 +6,12 @@
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
-var winVersions = Argument("winversion", "1803;1809;1903").Split(';');
+var winVersion = ArgumentOrEnvironmentVariable("winver", "1803");
+var sqlServerVersion = ArgumentOrEnvironmentVariable("sqlServerVersion", "2019");
+
+string username = ArgumentOrEnvironmentVariable("dockerhubUsername", "");
+string password = ArgumentOrEnvironmentVariable("dockerhubPassword", "");
+var dockerImageName = ArgumentOrEnvironmentVariable("dockerImageName", $"{username}/mssql-server:{sqlServerVersion}-{winVersion}");
 /*
 Windows versions:
       "1803",
@@ -47,27 +52,28 @@ Task("Default")
 
 Task("Build-Images")
 .Does(() => {
+   Information($"Building SQL '{sqlVersion}' for Windows '{winVersion}'");
+   var edition = "developer";
 
-   var sqlServerVersions = new[] {
-      //"2016_SP2",
-      //"2016_SP3",
-      "2019",
-   };
-
-   foreach (var sqlVersion in sqlServerVersions) {
-      foreach (var winVersion in winVersions) {
-         Information($"Building SQL '{sqlVersion}' for Windows '{winVersion}'");
-         var tag = $"mssql-server:{sqlVersion}-{winVersion}";
-         var edition = "developer";
-
-         DockerBuild(new DockerImageBuildSettings {
-            BuildArg = new[] { $"winversion={winVersion}" },
-            Tag = new[] { tag },
-            File = @$"{edition}\{sqlVersion}\Dockerfile",
-            Isolation = "hyperv",
-         }, edition);
-      }
-   }
+   DockerBuild(new DockerImageBuildSettings {
+      BuildArg = new[] { $"winversion={winVersion}" },
+      Tag = new[] { dockerImageName },
+      File = @$"{edition}\{sqlVersion}\Dockerfile",
+      Isolation = "hyperv",
+   }, edition);
+      
+   
 });
+
+Task("Deploy-Images")
+.Does(() => {
+   var loginSettings = new DockerRegistryLoginSettings();
+   loginSettings.username = username;
+   loginSettings.password = password;
+   DockerLogin(loginSettings);
+   DockerPush(dockerImageName);
+   DockerLogout();
+});
+
 
 RunTarget(target);
