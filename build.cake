@@ -10,7 +10,6 @@ var winVersion = EnvironmentVariable<string>("winver", "1803");
 var sqlServerVersion = EnvironmentVariable<string>("sqlServerVersion", "2019");
 
 string username = EnvironmentVariable<string>("dockerhubUsername", String.Empty);
-string password = EnvironmentVariable<string>("dockerhubPassword", String.Empty);
 var dockerImageName = EnvironmentVariable<string>("dockerImageName", $"{username}/mssql-server:{sqlServerVersion}-{winVersion}");
 /*
 Windows versions:
@@ -69,7 +68,7 @@ Task("Deploy-Images")
 .Does(() => {
    var loginSettings = new DockerRegistryLoginSettings();
    loginSettings.Username = username;
-   loginSettings.Password = password;
+   loginSteeing.PasswordStdin = true;
    DockerLogin(loginSettings);
    DockerPush(dockerImageName);
    DockerLogout();
