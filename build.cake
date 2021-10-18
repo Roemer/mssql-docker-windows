@@ -68,7 +68,7 @@ Task("Deploy-Images")
 .Does(() => {
    var loginSettings = new DockerRegistryLoginSettings();
    loginSettings.Username = username;
-   loginSteeing.PasswordStdin = true;
+   loginSettings.PasswordStdin = true;
    DockerLogin(loginSettings);
    DockerPush(dockerImageName);
    DockerLogout();
